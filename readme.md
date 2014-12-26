@@ -10,12 +10,16 @@ Starter app for managing users - login/logout, registration, and email confirmat
 
 ```sh
 $ export APP_SETTINGS="project.config.DevelopmentConfig"
+$ export APP_MAIL_USERNAME="foo"
+$ export APP_MAIL_PASSWORD="bar"
 ```
 
 or
 
 ```sh
 $ export APP_SETTINGS="project.config.ProductionConfig"
+$ export APP_MAIL_USERNAME="foo"
+$ export APP_MAIL_PASSWORD="bar"
 ```
 
 ### Update Settings in Production
