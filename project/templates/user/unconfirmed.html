@@ -1,0 +1,10 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1>Welcome!</h1>
+<br>
+<p>You have not confirmed your account. Please check your inbox (and your spam folder) - you should have received an email with a confirmation link.</p>
+<p>Didn't get the email? <a href="{{ url_for('user.resend_confirmation') }}">Resend</a>.</p>
+
+{% endblock %}

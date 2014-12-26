@@ -1,0 +1,34 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<h1>Please login</h1>
+<br>
+<form class="form-login" role="form" method="post" action="">
+  {{ form.csrf_token }}
+  <p>
+    {{ form.email(placeholder="email") }}
+    <span class="error">
+      {% if form.email.errors %}
+        {% for error in form.email.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+  <p>
+  {{ form.password(placeholder="password") }}
+    <span class="error">
+      {% if form.password.errors %}
+        {% for error in form.password.errors %}
+          {{ error }}
+        {% endfor %}
+      {% endif %}
+    </span>
+  </p>
+  <button class="btn btn-success" type="submit">Sign in!</button>
+  <br><br>
+  <p>Need to <a href="/register">Register</a>?</p>
+</form>
+
+{% endblock %}
