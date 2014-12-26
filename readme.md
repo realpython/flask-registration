@@ -1,6 +1,6 @@
 # Flask Registration
 
-[![Build Status](https://travis-ci.org/mjhea0/flask-basic-registration.svg?branch=master)](https://travis-ci.org/mjhea0/flask-basic-registration)
+[![Build Status](https://travis-ci.org/realpython/flask-registration.svg?branch=master)](https://travis-ci.org/realpython/flask-registration)
 
 Starter app for managing users - login/logout, registration, and email confirmation.
 
