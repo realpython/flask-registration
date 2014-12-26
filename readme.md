@@ -1,8 +1,8 @@
-# Flask User Management
+# Flask Registration
 
 [![Build Status](https://travis-ci.org/mjhea0/flask-basic-registration.svg?branch=master)](https://travis-ci.org/mjhea0/flask-basic-registration)
 
-Starter app for managing users - login/logout and registration.
+Starter app for managing users - login/logout, registration, and email confirmation.
 
 ## QuickStart
 
