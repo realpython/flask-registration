@@ -19,7 +19,7 @@ class User(db.Model):
     confirmed_on = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, email, password, confirmed,
-                 paid=False, admin=False, confirmed_on=None):
+                 admin=False, confirmed_on=None):
         self.email = email
         self.password = bcrypt.generate_password_hash(password)
         self.registered_on = datetime.datetime.now()

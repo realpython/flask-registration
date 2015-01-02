@@ -6,9 +6,10 @@ import unittest
 
 from flask.ext.login import current_user
 
-from project import bcrypt
+from project import bcrypt, db
 from project.util import BaseTestCase
 from project.models import User
+from project.token import generate_confirmation_token, confirm_token
 
 
 class TestUser(BaseTestCase):
@@ -54,7 +55,33 @@ class TestUser(BaseTestCase):
             response = self.client.post('/login', data=dict(
                 email='ad@min.com', password='foo_bar'
             ), follow_redirects=True)
-        self.assertIn(b'Invalid email and/or password.', response.data)
+            self.assertIn(b'Invalid email and/or password.', response.data)
+
+    def test_invalid_confirmation_token(self):
+        user1 = User(email='test@test1.com', password='test1', confirmed=False)
+        user2 = User(email='test@test2.com', password='test2', confirmed=False)
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
+        token = generate_confirmation_token('test@test2.com')
+        confirm_token(token)
+        self.assertFalse(user1.confirmed)
+
+    def test_invalid_confirmation_token_views(self):
+        user1 = User(email='test@test1.com', password='test1', confirmed=False)
+        user2 = User(email='test@test2.com', password='test2', confirmed=False)
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
+        token = generate_confirmation_token('test@test2.com')
+        with self.client:
+            self.client.post('/login', data=dict(
+                email='test@test1.com', password='test1'
+            ), follow_redirects=True)
+            response = self.client.get(
+                '/confirm/'+str(token), follow_redirects=True)
+            self.assertIn('The confirmation link is invalid or has expired.',
+                          response.data)
 
 
 if __name__ == '__main__':
