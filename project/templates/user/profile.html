@@ -6,7 +6,7 @@
 <br>
 
 {% if current_user.is_authenticated() %}
-  <p>Email: {{current_user.email}}</p>
+  <p>Email: <strong>{{current_user.email}}</strong></p>
 {% endif %}
 
 <h2>Change Password</h2>

@@ -41,9 +41,10 @@ class DevelopmentConfig(BaseConfig):
 class TestingConfig(BaseConfig):
     """Testing configuration."""
     TESTING = True
-    DEBUG = True
+    DEBUG = False
     BCRYPT_LOG_ROUNDS = 1
     WTF_CSRF_ENABLED = False
+    DEBUG_TB_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 

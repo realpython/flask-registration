@@ -5,3 +5,6 @@
 env
 migrations
 tmp
+
+blog-part2.md
+tests
