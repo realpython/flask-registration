@@ -6,6 +6,6 @@ env
 venv
 migrations
 tmp
+env.sh
 
 blog-part2.md
-tests2

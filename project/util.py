@@ -15,7 +15,11 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        user = User(email="ad@min.com", password="admin_user", confirmed=False)
+        user = User(
+            email="test@user.com",
+            password="just_a_test_user",
+            confirmed=False
+        )
         db.session.add(user)
         db.session.commit()
 
