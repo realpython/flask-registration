@@ -9,7 +9,11 @@ import datetime
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
-COV = coverage.coverage(branch=True, include='project/*')
+COV = coverage.coverage(
+        branch=True,
+        include='project/*',
+        omit=['*/__init__.py', '*/config/*']
+    )
 COV.start()
 
 from project import app, db
