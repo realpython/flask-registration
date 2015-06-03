@@ -13,7 +13,8 @@ class BaseTestCase(TestCase):
         app.config.from_object('project.config.TestingConfig')
         return app
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         db.create_all()
         user = User(
             email="test@user.com",
@@ -23,6 +24,7 @@ class BaseTestCase(TestCase):
         db.session.add(user)
         db.session.commit()
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
         db.session.remove()
         db.drop_all()
