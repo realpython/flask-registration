@@ -102,19 +102,19 @@ def profile():
 @user_blueprint.route('/confirm/<token>')
 @login_required
 def confirm_email(token):
-    try:
-        email = confirm_token(token)
-    except:
-        flash('The confirmation link is invalid or has expired.', 'danger')
-    user = User.query.filter_by(email=email).first_or_404()
-    if user.confirmed:
+    if current_user.confirmed:
         flash('Account already confirmed. Please login.', 'success')
-    else:
+        return redirect(url_for('main.home'))
+    email = confirm_token(token)
+    user = User.query.filter_by(email=current_user.email).first_or_404()
+    if user.email == email:
         user.confirmed = True
         user.confirmed_on = datetime.datetime.now()
         db.session.add(user)
         db.session.commit()
         flash('You have confirmed your account. Thanks!', 'success')
+    else:
+        flash('The confirmation link is invalid or has expired.', 'danger')
     return redirect(url_for('main.home'))
 
 

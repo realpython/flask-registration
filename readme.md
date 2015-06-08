@@ -4,7 +4,10 @@
 
 Starter app for managing users - login/logout, registration, and email confirmation.
 
-**Blog post >> https://realpython.com/blog/python/handling-email-confirmation-in-flask/**
+**Blog posts:**
+
+- Part 1: [Handling Email Confirmation During Registration in Flask](https://realpython.com/blog/python/handling-email-confirmation-in-flask)
+- Part 2: [The Minimum Viable Test Suite](https://realpython.com/blog/python/the-minimum-viable-test-suite/)
 
 ## QuickStart
 
