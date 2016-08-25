@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from flask.ext.login import current_user
+from flask_login import current_user
 
 from project import db
 from project.models import User
@@ -109,8 +109,10 @@ class TestUserViews(BaseTestCase):
                 email='test@user.com', password='just_a_test_user'
             ), follow_redirects=True)
             token = generate_confirmation_token('test@user.com')
-            response = self.client.get('/confirm/'+token, follow_redirects=True)
-            self.assertIn(b'You have confirmed your account. Thanks!', response.data)
+            response = self.client.get(
+                '/confirm/'+token, follow_redirects=True)
+            self.assertIn(
+                b'You have confirmed your account. Thanks!', response.data)
             self.assertTemplateUsed('main/index.html')
             user = User.query.filter_by(email='test@user.com').first_or_404()
             self.assertIsInstance(user.confirmed_on, datetime.datetime)
@@ -123,7 +125,8 @@ class TestUserViews(BaseTestCase):
             self.client.post('/login', data=dict(
                 email='test@user.com', password='just_a_test_user'
             ), follow_redirects=True)
-            response = self.client.get('/confirm/'+token, follow_redirects=True)
+            response = self.client.get('/confirm/'+token,
+                                       follow_redirects=True)
             self.assertIn(
                 b'The confirmation link is invalid or has expired.',
                 response.data
