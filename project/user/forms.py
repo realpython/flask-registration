@@ -16,10 +16,10 @@ class LoginForm(Form):
 class RegisterForm(Form):
     email = TextField(
         'email',
-        validators=[DataRequired(), Email(message=None), Length(min=6, max=40)])
+        validators=[DataRequired(), Email(message=None), Length(min=6, max=255)])
     password = PasswordField(
         'password',
-        validators=[DataRequired(), Length(min=6, max=25)]
+        validators=[DataRequired(), Length(min=6, max=255)]
     )
     confirm = PasswordField(
         'Repeat password',
@@ -40,10 +40,26 @@ class RegisterForm(Form):
         return True
 
 
+class ForgotForm(Form):
+    email = TextField(
+        'email',
+        validators=[DataRequired(), Email(message=None), Length(min=6, max=255)])
+
+    def validate(self):
+        initial_validation = super(ForgotForm, self).validate()
+        if not initial_validation:
+            return False
+        user = User.query.filter_by(email=self.email.data).first()
+        if not user:
+            self.email.errors.append("This email is not registered")
+            return False
+        return True
+
+
 class ChangePasswordForm(Form):
     password = PasswordField(
         'password',
-        validators=[DataRequired(), Length(min=6, max=25)]
+        validators=[DataRequired(), Length(min=6, max=255)]
     )
     confirm = PasswordField(
         'Repeat password',

@@ -4,6 +4,20 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
+def _get_bool_env_var(varname, default=None):
+
+    value = os.environ.get(varname, default)
+
+    if value is None:
+        return False
+    elif isinstance(value, str) and value.lower() == 'false':
+        return False
+    elif bool(value) is False:
+        return False
+    else:
+        return bool(value)
+
+
 class BaseConfig(object):
     """Base configuration."""
 
@@ -17,12 +31,17 @@ class BaseConfig(object):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
 
     # mail settings
-    MAIL_SERVER = 'smtp.googlemail.com'
-    MAIL_PORT = 465
-    MAIL_USE_TLS = False
-    MAIL_USE_SSL = True
+    # defaults are:
+    #  - MAIL_SERVER = 'smtp.googlemail.com'
+    #  - MAIL_PORT = 465
+    #  - MAIL_USE_TLS = False
+    #  - MAIL_USE_SSL = True
+    MAIL_SERVER = os.environ.get('APP_MAIL_SERVER', 'smtp.googlemail.com')
+    MAIL_PORT = int(os.environ.get('APP_MAIL_PORT', 465))
+    MAIL_USE_TLS = _get_bool_env_var('APP_MAIL_USE_TLS', False)
+    MAIL_USE_SSL = _get_bool_env_var('APP_MAIL_USE_SSL', True)
 
-    # gmail authentication
+    # mail authentication
     MAIL_USERNAME = os.environ['APP_MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['APP_MAIL_PASSWORD']
 
@@ -40,6 +59,7 @@ class DevelopmentConfig(BaseConfig):
 
 class TestingConfig(BaseConfig):
     """Testing configuration."""
+    LOGIN_DISABLED=False
     TESTING = True
     DEBUG = False
     BCRYPT_LOG_ROUNDS = 1

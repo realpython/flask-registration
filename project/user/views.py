@@ -9,7 +9,7 @@ import datetime
 
 from flask import render_template, Blueprint, url_for, \
     redirect, flash, request
-from flask.ext.login import login_user, logout_user, \
+from flask_login import login_user, logout_user, \
     login_required, current_user
 
 from project.models import User
@@ -17,7 +17,7 @@ from project.email import send_email
 from project.token import generate_confirmation_token, confirm_token
 from project.decorators import check_confirmed
 from project import db, bcrypt
-from .forms import LoginForm, RegisterForm, ChangePasswordForm
+from .forms import LoginForm, RegisterForm, ChangePasswordForm, ForgotForm
 
 
 ################
@@ -137,3 +137,58 @@ def resend_confirmation():
     send_email(current_user.email, subject, html)
     flash('A new confirmation email has been sent.', 'success')
     return redirect(url_for('user.unconfirmed'))
+
+@user_blueprint.route('/forgot',  methods=['GET', 'POST'])
+def forgot():
+    form = ForgotForm(request.form)
+    if form.validate_on_submit():
+
+        user = User.query.filter_by(email=form.email.data).first()
+        token = generate_confirmation_token(user.email)
+
+        user.password_reset_token = token
+        db.session.commit()
+
+        reset_url = url_for('user.forgot_new', token=token, _external=True)
+        html = render_template('user/reset.html',
+                               username=user.email,
+                               reset_url=reset_url)
+        subject = "Reset your password"
+        send_email(user.email, subject, html)
+
+        flash('A password reset email has been sent via email.', 'success')
+        return redirect(url_for("main.home"))
+
+    return render_template('user/forgot.html', form=form)
+
+
+@user_blueprint.route('/forgot/new/<token>', methods=['GET', 'POST'])
+def forgot_new(token):
+
+    email = confirm_token(token)
+    user = User.query.filter_by(email=email).first_or_404()
+
+    if user.password_reset_token is not None:
+        form = ChangePasswordForm(request.form)
+        if form.validate_on_submit():
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.password = bcrypt.generate_password_hash(form.password.data)
+                user.password_reset_token = None
+                db.session.commit()
+
+                login_user(user)
+
+                flash('Password successfully changed.', 'success')
+                return redirect(url_for('user.profile'))
+
+            else:
+                flash('Password change was unsuccessful.', 'danger')
+                return redirect(url_for('user.profile'))
+        else:
+            flash('You can now change your password.', 'success')
+            return render_template('user/forgot_new.html', form=form)
+    else:
+        flash('Can not reset the password, try again.', 'danger')
+
+    return redirect(url_for('main.home'))

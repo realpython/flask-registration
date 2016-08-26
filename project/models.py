@@ -17,15 +17,18 @@ class User(db.Model):
     admin = db.Column(db.Boolean, nullable=False, default=False)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
     confirmed_on = db.Column(db.DateTime, nullable=True)
+    password_reset_token = db.Column(db.String, nullable=True)
 
     def __init__(self, email, password, confirmed,
-                 admin=False, confirmed_on=None):
+                 admin=False, confirmed_on=None,
+                 password_reset_token=None):
         self.email = email
         self.password = bcrypt.generate_password_hash(password)
         self.registered_on = datetime.datetime.now()
         self.admin = admin
         self.confirmed = confirmed
         self.confirmed_on = confirmed_on
+        self.password_reset_token = password_reset_token
 
     def is_authenticated(self):
         return True
