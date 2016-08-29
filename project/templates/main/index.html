@@ -1,8 +1,25 @@
 {% extends "_base.html" %}
 {% block content %}
 
-<h1>Welcome!</h1>
-<br>
-<p><a href="/logout">Logout</a>
+{% if current_user.is_authenticated() %}
+  <h1>Welcome, {{ current_user.email }}</h1>
+{% else %}
+  <h1>Welcome!</h1>
+{% endif %}
+<br />
+
+{% if current_user.is_authenticated() %}
+  <p>You are <span style="color:green">authenticated</span></p>
+  <ul>
+    <li><a href="/logout">Logout</a></li>
+  </ul>
+{% else %}
+  <p>You are <span style="color:red">not authenticated</span>:</p>
+  <ul>
+    <li><a href="/login">Sign In</a></li>
+    <li>Need to <a href="/register">register</a>?</li>
+    <li><a href="/forgot">Forgot</a> your password?</li>
+  </ul>
+{% endif %}
 
 {% endblock %}

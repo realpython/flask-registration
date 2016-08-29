@@ -7,7 +7,7 @@ from project import db
 from project.models import User
 from project.util import BaseTestCase
 from project.user.forms import RegisterForm, \
-    LoginForm, ChangePasswordForm
+    LoginForm, ChangePasswordForm, ForgotForm
 from project.token import generate_confirmation_token, confirm_token
 
 
@@ -59,6 +59,21 @@ class TestUserForms(BaseTestCase):
     def test_validate_invalid_change_password_format(self):
         # Ensure invalid email format throws error.
         form = ChangePasswordForm(password='123', confirm='123')
+        self.assertFalse(form.validate())
+
+    def test_validate_success_forgot_password(self):
+        # Ensure invalid email format throws error.
+        form = ForgotForm(email='test@user.com')
+        self.assertTrue(form.validate())
+
+    def test_validate_invalid_forgot_password_format(self):
+        # Ensure invalid email format throws error.
+        form = ForgotForm(email='unknown')
+        self.assertFalse(form.validate())
+
+    def test_validate_invalid_forgot_password_no_such_user(self):
+        # Ensure invalid email format throws error.
+        form = ForgotForm(email='not@correct.com')
         self.assertFalse(form.validate())
 
 
@@ -139,6 +154,115 @@ class TestUserViews(BaseTestCase):
         db.session.commit()
         token = generate_confirmation_token('test@test1.com')
         self.assertFalse(confirm_token(token, -1))
+
+    def test_forgot_password_does_not_require_login(self):
+        # Ensure user can request new password without login.
+        self.client.get('/forgot', follow_redirects=True)
+        self.assertTemplateUsed('user/forgot.html')
+
+    def test_correct_forgot_password_request(self):
+        # Ensure login behaves correctly with correct credentials.
+        with self.client:
+            response = self.client.post(
+                '/forgot',
+                data=dict(email="test@user.com"),
+                follow_redirects=True
+            )
+            self.assertTrue(response.status_code == 200)
+            self.assertTemplateUsed('main/index.html')
+
+    def test_reset_forgotten_password_valid_token(self):
+        # Ensure user can confirm account with valid token.
+        with self.client:
+            self.client.post('/forgot', data=dict(
+                email='test@user.com',
+            ), follow_redirects=True)
+            token = generate_confirmation_token('test@user.com')
+            response = self.client.get('/forgot/new/'+token, follow_redirects=True)
+            self.assertTemplateUsed('user/forgot_new.html')
+            self.assertIn(
+                b'You can now change your password.',
+                response.data
+            )
+            self.assertFalse(current_user.is_authenticated())
+
+    def test_reset_forgotten_password_valid_token_correct_login(self):
+        # Ensure user can confirm account with valid token.
+        with self.client:
+            self.client.post('/forgot', data=dict(
+                email='test@user.com',
+            ), follow_redirects=True)
+            token = generate_confirmation_token('test@user.com')
+            response = self.client.get('/forgot/new/'+token, follow_redirects=True)
+            self.assertTemplateUsed('user/forgot_new.html')
+            self.assertIn(
+                b'You can now change your password.',
+                response.data
+            )
+            response = self.client.post(
+                '/forgot/new/'+token,
+                data=dict(password="new-password", confirm="new-password"),
+                follow_redirects=True
+            )
+            self.assertIn(
+                b'Password successfully changed.',
+                response.data
+            )
+            self.assertTemplateUsed('user/profile.html')
+            self.assertTrue(current_user.is_authenticated())
+            self.client.get('/logout')
+            self.assertFalse(current_user.is_authenticated())
+
+            response = self.client.post(
+                '/login',
+                data=dict(email="test@user.com", password="new-password"),
+                follow_redirects=True
+            )
+            self.assertTrue(response.status_code == 200)
+            self.assertTrue(current_user.email == "test@user.com")
+            self.assertTrue(current_user.is_active())
+            self.assertTrue(current_user.is_authenticated())
+            self.assertTemplateUsed('main/index.html')
+
+    def test_reset_forgotten_password_valid_token_invalid_login(self):
+        # Ensure user can confirm account with valid token.
+        with self.client:
+            self.client.post('/forgot', data=dict(
+                email='test@user.com',
+            ), follow_redirects=True)
+            token = generate_confirmation_token('test@user.com')
+            response = self.client.get('/forgot/new/'+token, follow_redirects=True)
+            self.assertTemplateUsed('user/forgot_new.html')
+            self.assertIn(
+                b'You can now change your password.',
+                response.data
+            )
+            response = self.client.post(
+                '/forgot/new/'+token,
+                data=dict(password="new-password", confirm="new-password"),
+                follow_redirects=True
+            )
+            self.assertIn(
+                b'Password successfully changed.',
+                response.data
+            )
+            self.assertTemplateUsed('user/profile.html')
+            self.assertTrue(current_user.is_authenticated())
+            self.client.get('/logout')
+            self.assertFalse(current_user.is_authenticated())
+
+            response = self.client.post(
+                '/login',
+                data=dict(email="test@user.com", password="just_a_test_user"),
+                follow_redirects=True
+            )
+            self.assertTrue(response.status_code == 200)
+            self.assertFalse(current_user.is_authenticated())
+            self.assertIn(
+                b'Invalid email and/or password.',
+                response.data
+            )
+            self.assertTemplateUsed('user/login.html')
 
 
 if __name__ == '__main__':
