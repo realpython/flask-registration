@@ -13,18 +13,28 @@ Starter app for managing users - login/logout, registration, and email confirmat
 
 ### Set Environment Variables
 
+Development Example (with [Debug Mail](https://debugmail.io)):
+
 ```sh
 $ export APP_SETTINGS="project.config.DevelopmentConfig"
-$ export APP_MAIL_USERNAME="foo"
-$ export APP_MAIL_PASSWORD="bar"
+$ export APP_MAIL_SERVER=debugmail.io
+$ export APP_MAIL_PORT=25
+$ export APP_MAIL_USE_TLS=true
+$ export APP_MAIL_USE_SSL=false
+$ export APP_MAIL_USERNAME=ADDYOUROWN
+$ export APP_MAIL_PASSWORD=ADDYOUROWN
 ```
 
-or
+Production Example:
 
 ```sh
 $ export APP_SETTINGS="project.config.ProductionConfig"
-$ export APP_MAIL_USERNAME="foo"
-$ export APP_MAIL_PASSWORD="bar"
+$ export APP_MAIL_SERVER=ADDYOUROWN
+$ export APP_MAIL_PORT=ADDYOUROWN
+$ export APP_MAIL_USE_TLS=ADDYOUROWN
+$ export APP_MAIL_USE_SSL=ADDYOUROWN
+$ export APP_MAIL_USERNAME=ADDYOUROWN
+$ export APP_MAIL_PASSWORD=ADDYOUROWN
 ```
 
 ### Update Settings in Production
@@ -34,11 +44,25 @@ $ export APP_MAIL_PASSWORD="bar"
 
 ### Create DB
 
+Run:
+
+```sh
+$ sh create.sh
+```
+
+Or:
+
 ```sh
 $ python manage.py create_db
 $ python manage.py db init
 $ python manage.py db migrate
 $ python manage.py create_admin
+```
+
+Want to clean the environment? Run:
+
+```sh
+sh clean.sh
 ```
 
 ### Run

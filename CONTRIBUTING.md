@@ -5,7 +5,7 @@ How to contribute
 
 You can create a file `env.sh` with the settings needed to setup the needed development (or testing) environment variables.
 
-```bash
+```sh
 #!/usr/bin/env bash
 
 function app_clean_env() {
@@ -54,8 +54,8 @@ To send email for development, testing and production you can use your own hoste
 * [Mailgun](https://mailgun.com)
 You can use Mailgun if you want to send emails in production.
 
-* [Debug mail](https://mailgun.com)
-Debug mail is a tool to debut email, you can use it for developing testing.
+* [Debug Mail](https://mailgun.com)
+Debug Mail is a tool to debut email, you can use it for developing testing.
 
 Both services offer free plans that you can use for developing and testing `flask-registration`.
 
@@ -64,7 +64,8 @@ Both services offer free plans that you can use for developing and testing `flas
 You can use the scripts `clean.sh` and `create.sh` to setup the environment.
 
 You need to set up the `APP_SETTINGS` variable:
-```bash
+
+```sh
 export APP_SETTINGS=project.config.DevelopmentConfig
 ```
 
@@ -84,6 +85,7 @@ To run the tests:
 2. if you don't have an account on [Travis](http://travis-ci.org/), create it (it's free)
 3. Add your `flask-registration` repository on the Travis settings page.
 4. In Travis, click of the cog icon next to the repository and add the following [environment variables](https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings):
+
 ```
 APP_SETTINGS: project.config.TestingConfig
 APP_MAIL_SERVER: <your_smtp_server>
@@ -91,11 +93,14 @@ APP_MAIL_PORT: <your_smtp_server_port>
 APP_MAIL_USERNAME: <your_smpt_username>
 APP_MAIL_PASSWORD: <your_smpt_password>
 ```
-you can use any valid SMTP credentials, the defaults are the following:
+
+You can use any valid SMTP credentials, the defaults are the following:
+
 ```
 MAIL_SERVER = 'smtp.googlemail.com'
 MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 ```
-when the commits to your repository, travis will automatically build the application with the testing settings (see the file `.travis.yml`.
+
+When you commit to your repository, travis will automatically build the application with the testing settings (see the file `.travis.yml`.
